@@ -1,6 +1,7 @@
 // src/pages/Login.js
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,20 +13,32 @@ const Login = () => {
 
     if (email === "admin@mail.com" && password === "123") {
       localStorage.setItem("admin", JSON.stringify({ email }));
-      navigate("/");
+      navigate("/"); // yoki sizda mavjud dashboard yo‘li
     } else {
       alert("Xato email yoki parol");
     }
   };
 
   return (
-    <div style={{ padding: 30 }}>
-      <h2>Admin Panel - Kirish</h2>
-      <form onSubmit={handleLogin}>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} /><br />
-        <input type="password" placeholder="Parol" value={password} onChange={(e) => setPassword(e.target.value)} /><br />
-        <button type="submit">Kirish</button>
-      </form>
+    <div className="login-container">
+      <div className="login-box">
+        <h2>Admin Panel - Kirish</h2>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email kiriting"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Parol"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Kirish</button>
+        </form>
+      </div>
     </div>
   );
 };
