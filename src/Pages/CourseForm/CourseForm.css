@@ -1,0 +1,80 @@
+.course-form {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 24px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .course-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .course-form input,
+  .course-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  .course-form textarea {
+    min-height: 80px;
+    resize: vertical;
+    resize: none;
+  }
+  
+  .curriculum-section {
+    background-color: #fff;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+  }
+  
+  .curriculum-section h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .video-item {
+    padding: 10px;
+    border-left: 4px solid #ccc;
+    margin-bottom: 10px;
+    background-color: #fefefe;
+    border-radius: 4px;
+  }
+  
+  .btn,
+  .btn-submit,
+  .btn-small {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 8px 4px 0 0;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover,
+  .btn-submit:hover,
+  .btn-small:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-submit {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
