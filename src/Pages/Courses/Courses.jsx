@@ -43,17 +43,17 @@ const Courses = () => {
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Rostdan ham o‘chirmoqchimisiz?");
-    setIsLoading(true);
+
     if (confirmDelete) {
+      setIsLoading(true);
       try {
-        setIsLoading(false);
         await deleteDoc(doc(db, "courses", id));
-        setShow(true); // Alert ko‘rinadi
+        // setShow(true);
+        alert("Kurs muvaffaqiyatli o'chirildi!");
         setTimeout(() => setShow(false), 3000);
         setCourses((prev) => prev.filter((course) => course.id !== id));
       } catch (error) {
         alert("Xatolik yuz berdi: " + error.message);
-        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }

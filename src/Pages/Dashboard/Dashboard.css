@@ -34,6 +34,12 @@
   border-radius: 4px;
   transition: background 0.2s;
 }
+.sidebar-menu li.active {
+  background-color: #34495e;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
 
 .sidebar-menu li:hover {
   background-color: #34495e;
@@ -43,7 +49,6 @@
   display: flex;
   margin-bottom: 20px;
 }
-
 
 .dashboard-content {
   flex-grow: 1;

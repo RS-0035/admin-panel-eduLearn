@@ -14,8 +14,18 @@ const Dashboard = () => {
       <aside className="sidebar">
         <h2 className="sidebar-title">🎓 Admin Panel</h2>
         <ul className="sidebar-menu">
-          <li onClick={() => navigate("/courses")}>📚 Kurslar</li>
-          <li onClick={() => navigate("/teachers")}>👩‍🏫 O‘qituvchilar</li>
+          <li
+            className={location.pathname === "/courses" ? "active" : ""}
+            onClick={() => navigate("/courses")}
+          >
+            📚 Kurslar
+          </li>
+          <li
+            className={location.pathname === "/teachers" ? "active" : ""}
+            onClick={() => navigate("/teachers")}
+          >
+            👩‍🏫 O‘qituvchilar
+          </li>
           <li onClick={logout}>🚪 Chiqish</li>
         </ul>
       </aside>
