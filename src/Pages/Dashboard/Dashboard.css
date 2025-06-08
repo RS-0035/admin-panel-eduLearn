@@ -23,6 +23,9 @@
 .sidebar-menu {
   list-style: none;
   padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-menu li {
@@ -35,6 +38,12 @@
 .sidebar-menu li:hover {
   background-color: #34495e;
 }
+.sidebar-menu li:last-child {
+  margin-top: auto; /* oxirgi element qolgan joydan pastga itariladi */
+  display: flex;
+  margin-bottom: 20px;
+}
+
 
 .dashboard-content {
   flex-grow: 1;

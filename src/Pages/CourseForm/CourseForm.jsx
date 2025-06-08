@@ -9,19 +9,25 @@ const CourseForm = () => {
     description: "",
     duration: "",
     level: "",
+    category: "",
     instructor: "",
+    price: "",
     videoURL: [],
     curriculum: [
       {
         title: "",
         week: "",
-        videos: [{ title: "", duration: "", videoUrl: "" }],
+        videos: [{ title: "", duration: "", videoUrl: "", isFree: true }],
       },
     ],
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === "price" ? parseFloat(value) || "" : value,
+    });
   };
 
   const handleCurriculumChange = (index, field, value) => {
@@ -32,7 +38,8 @@ const CourseForm = () => {
 
   const handleVideoChange = (sectionIndex, videoIndex, field, value) => {
     const updatedCurriculum = [...form.curriculum];
-    updatedCurriculum[sectionIndex].videos[videoIndex][field] = value;
+    updatedCurriculum[sectionIndex].videos[videoIndex][field] =
+      field === "isFree" ? value : value;
     setForm({ ...form, curriculum: updatedCurriculum });
   };
 
@@ -73,15 +80,20 @@ const CourseForm = () => {
             title: video.title.trim(),
             duration: video.duration.trim(),
             videoUrl: video.videoUrl.trim(),
+            isFree: video.isFree ?? false,
           })),
       }))
       .filter(
         (section) => section.title && section.week && section.videos.length > 0
       );
 
+    const cleanedVideoURL = form.videoURL.filter((url) => url.trim() !== "");
+
     const courseData = {
       ...form,
+      videoURL: cleanedVideoURL,
       curriculum: cleanedCurriculum,
+      category: form.category,
     };
 
     try {
@@ -99,16 +111,73 @@ const CourseForm = () => {
       <textarea
         name="description"
         placeholder="Ta'rif"
+        value={form.description}
         onChange={handleChange}
       />
-      <input name="duration" placeholder="Davomiylik" onChange={handleChange} />
-      <input name="level" placeholder="Daraja" onChange={handleChange} />
+      <input
+        name="duration"
+        value={form.duration}
+        placeholder="Davomiylik"
+        onChange={handleChange}
+      />
+      <select name="level" value={form.level} onChange={handleChange}>
+        <option value="">Darajani tanlang</option>
+        <option value="Boshlang'ich">Boshlang‘ich</option>
+        <option value="O'rta">O‘rta</option>
+        <option value="Yuqori">Yuqori</option>
+      </select>
+      <select name="category" value={form.category} onChange={handleChange}>
+        <option value="">Yo‘nalishni tanlang</option>
+        <option value="IT">🔧 Texnologiya va IT</option>
+        <option value="Design">🎨 Dizayn</option>
+        <option value="Languages">🌍 Tillar</option>
+        <option value="LifeSkills">🍳 Hayotiy ko‘nikmalar</option>
+        <option value="Profession">💼 Kasb-hunar</option>
+        <option value="Marketing">📈 Biznes va Marketing</option>
+        <option value="Development">💡 Shaxsiy rivojlanish</option>
+        <option value="Subjects">
+          📖 Fanlar (Maktab va oliy o‘quv yurtlari uchun)
+        </option>
+      </select>
       <input
         name="instructor"
         placeholder="O'qituvchi"
         onChange={handleChange}
+        value={form.instructor}
       />
-
+      <input
+        type="number"
+        name="price"
+        placeholder="Kurs narxi (so'mda)"
+        onChange={handleChange}
+        value={form.price}
+        required
+        min="0"
+        step="any"
+      />
+      {/* Video URL-lar uchun bo‘lim */}
+      <div className="video-urls-section">
+        <h3>Video URL-lar</h3>
+        {form.videoURL.map((url, index) => (
+          <input
+            key={index}
+            type="text"
+            placeholder={`Video URL ${index + 1}`}
+            value={url}
+            onChange={(e) => {
+              const newVideoURL = [...form.videoURL];
+              newVideoURL[index] = e.target.value;
+              setForm({ ...form, videoURL: newVideoURL });
+            }}
+          />
+        ))}
+        <button
+          type="button"
+          onClick={() => setForm({ ...form, videoURL: [...form.videoURL, ""] })}
+        >
+          ➕ Video URL qo‘shish
+        </button>
+      </div>
       {form.curriculum.map((section, sIndex) => (
         <div className="curriculum-section" key={sIndex}>
           <h3>{sIndex + 1}-Bo‘lim</h3>
@@ -150,6 +219,22 @@ const CourseForm = () => {
                   handleVideoChange(sIndex, vIndex, "videoUrl", e.target.value)
                 }
               />
+              <label className="checkbox-container">
+                <input
+                  type="checkbox"
+                  checked={video.isFree}
+                  onChange={(e) =>
+                    handleVideoChange(
+                      sIndex,
+                      vIndex,
+                      "isFree",
+                      e.target.checked
+                    )
+                  }
+                />
+                <span className="checkmark"></span>
+                Tekin video
+              </label>
             </div>
           ))}
 
@@ -162,11 +247,9 @@ const CourseForm = () => {
           </button>
         </div>
       ))}
-
       <button className="btn" type="button" onClick={addCurriculumSection}>
         ➕ Bo‘lim qo‘shish
       </button>
-
       <button className="btn-submit" type="submit">
         📤 Kursni yuklash
       </button>
