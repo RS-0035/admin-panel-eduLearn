@@ -25,6 +25,20 @@
   gap: 24px;
 }
 
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 250px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .course-card {
   background-color: #fff;
   border: 1px solid #e5e5e5;
@@ -69,12 +83,12 @@
 }
 
 .course-actions .edit {
-  background-color: #4caf50;
+  background-color: #1976d2;
   color: white;
 }
 
 .course-actions .edit:hover {
-  background-color: #388e3c;
+  background-color: #1976d2c3;
 }
 
 .course-actions .delete {

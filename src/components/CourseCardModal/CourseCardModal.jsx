@@ -18,11 +18,12 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
         {
           title: "",
           week: "",
-          videos: [{ title: "", duration: "", videoUrl: "", isFree: true }],
+          videos: [{ title: "", duration: "", videoUrl: "", isFree: false }],
         },
       ],
     }
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (existingData) {
@@ -61,7 +62,7 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
         {
           title: "",
           week: "",
-          videos: [{ title: "", duration: "", videoUrl: "" }],
+          videos: [{ title: "", duration: "", videoUrl: "", isFree: false }],
         },
       ],
     });
@@ -79,7 +80,8 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
+  
     const cleanedCurriculum = form.curriculum
       .map((section) => ({
         title: section.title.trim(),
@@ -96,32 +98,37 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
       .filter(
         (section) => section.title && section.week && section.videos.length > 0
       );
-
+  
     const cleanedVideoURL = form.videoURL.filter((url) => url.trim() !== "");
-
+  
     const courseData = {
       ...form,
       videoURL: cleanedVideoURL,
       curriculum: cleanedCurriculum,
       category: form.category,
     };
-
+  
     try {
       if (form.id) {
-        // Tahrirlash
         const docRef = doc(db, "courses", form.id);
         await updateDoc(docRef, courseData);
-        alert("✅ Kurs yangilandi!");
       } else {
-        // Yangi qo‘shish
         await addDoc(collection(db, "courses"), courseData);
-        alert("✅ Kurs qo‘shildi!");
       }
-      onClose(); // modalni yopish
+  
+      setIsLoading(false);  // ✅ loaderni o‘chir
+      onClose();            // ✅ modalni yop
+  
+      setTimeout(() => {
+        alert(form.id ? "✅ Kurs yangilandi!" : "✅ Kurs qo‘shildi!");
+        window.location.reload();
+      }, 100);
     } catch (err) {
+      setIsLoading(false);  // ❗ xatolikda ham loaderni o‘chir
       alert("❌ Xatolik: " + err.message);
     }
   };
+  
 
   return (
     <div className="modal-overlay">
@@ -129,170 +136,180 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
         <button className="close-btn" onClick={onClose}>
           ❌
         </button>
-        <form className="course-form" onSubmit={handleSubmit}>
-          <h2>📘 Yangi kurs qo‘shish</h2>
-          <div className="flex-group">
-            <input
-              name="title"
-              placeholder="Kurs nomi"
+        {isLoading ? (
+          <div className="loader"></div>
+        ) : (
+          <form className="course-form" onSubmit={handleSubmit}>
+            <h2>📘 Yangi kurs qo‘shish</h2>
+            <div className="flex-group">
+              <input
+                name="title"
+                value={form.title}
+                placeholder="Kurs nomi"
+                onChange={handleChange}
+              />
+              <input
+                name="instructor"
+                placeholder="O‘qituvchi"
+                onChange={handleChange}
+                value={form.instructor}
+              />
+            </div>
+            <textarea
+              name="description"
+              placeholder="Ta'rif"
+              value={form.description}
               onChange={handleChange}
             />
-            <input
-              name="instructor"
-              placeholder="O‘qituvchi"
-              onChange={handleChange}
-              value={form.instructor}
-            />
-          </div>
-          <textarea
-            name="description"
-            placeholder="Ta'rif"
-            value={form.description}
-            onChange={handleChange}
-          />
-          <div className="flex-group">
-            <input
-              name="duration"
-              value={form.duration}
-              placeholder="Davomiylik"
-              onChange={handleChange}
-            />
-            <input
-              type="number"
-              name="price"
-              placeholder="Narxi"
-              onChange={handleChange}
-              value={form.price}
-              min="0"
-            />
-          </div>
-          <div className="flex-group">
-            <select name="level" value={form.level} onChange={handleChange}>
-              <option value="">Daraja</option>
-              <option value="Boshlang'ich">Boshlang‘ich</option>
-              <option value="O'rta">O‘rta</option>
-              <option value="Yuqori">Yuqori</option>
-            </select>
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-            >
-              <option value="">Yo‘nalish</option>
-              <option value="IT">IT</option>
-              <option value="Design">Dizayn</option>
-              <option value="Languages">Tillar</option>
-              <option value="LifeSkills">Hayotiy ko‘nikmalar</option>
-              <option value="Profession">Kasb-hunar</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Development">Rivojlanish</option>
-              <option value="Subjects">Fanlar</option>
-            </select>
-          </div>
+            <div className="flex-group">
+              <input
+                name="duration"
+                value={form.duration}
+                placeholder="Davomiylik"
+                onChange={handleChange}
+              />
+              <input
+                type="number"
+                name="price"
+                placeholder="Narxi"
+                onChange={handleChange}
+                value={form.price}
+                min="0"
+              />
+            </div>
+            <div className="flex-group">
+              <select name="level" value={form.level} onChange={handleChange}>
+                <option defaultValue="">Daraja</option>
+                <option value="Boshlang'ich">Boshlang‘ich</option>
+                <option value="O'rta">O‘rta</option>
+                <option value="Yuqori">Yuqori</option>
+              </select>
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+              >
+                <option defaultValue="">Yo‘nalish</option>
+                <option value="IT">IT</option>
+                <option value="Design">Dizayn</option>
+                <option value="Languages">Tillar</option>
+                <option value="LifeSkills">Hayotiy ko‘nikmalar</option>
+                <option value="Profession">Kasb-hunar</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Development">Rivojlanish</option>
+                <option value="Subjects">Fanlar</option>
+              </select>
+            </div>
 
-          <div className="video-urls-section">
-            <h4>Video URL-lar</h4>
-            {form.videoURL.map((url, index) => (
-              <input
-                key={index}
-                placeholder={`Video URL ${index + 1}`}
-                value={url}
-                onChange={(e) => {
-                  const newVideoURL = [...form.videoURL];
-                  newVideoURL[index] = e.target.value;
-                  setForm({ ...form, videoURL: newVideoURL });
-                }}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={() =>
-                setForm({ ...form, videoURL: [...form.videoURL, ""] })
-              }
-            >
-              ➕ Video qo‘shish
-            </button>
-          </div>
+            <div className="video-urls-section">
+              <h4>Video URL-lar</h4>
+              {form.videoURL.map((url, index) => (
+                <input
+                  key={index}
+                  placeholder={`Video URL ${index + 1}`}
+                  value={url}
+                  onChange={(e) => {
+                    const newVideoURL = [...form.videoURL];
+                    newVideoURL[index] = e.target.value;
+                    setForm({ ...form, videoURL: newVideoURL });
+                  }}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({ ...form, videoURL: [...form.videoURL, ""] })
+                }
+              >
+                ➕ Video qo‘shish
+              </button>
+            </div>
 
-          {form.curriculum.map((section, sIndex) => (
-            <div className="curriculum-section" key={sIndex}>
-              <h4>{sIndex + 1}-bo‘lim</h4>
-              <input
-                placeholder="Bo‘lim nomi"
-                value={section.title}
-                onChange={(e) =>
-                  handleCurriculumChange(sIndex, "title", e.target.value)
-                }
-              />
-              <input
-                placeholder="Hafta"
-                value={section.week}
-                onChange={(e) =>
-                  handleCurriculumChange(sIndex, "week", e.target.value)
-                }
-              />
-              {section.videos.map((video, vIndex) => (
-                <div key={vIndex} className="video-item">
-                  <input
-                    placeholder="Video nomi"
-                    value={video.title}
-                    onChange={(e) =>
-                      handleVideoChange(sIndex, vIndex, "title", e.target.value)
-                    }
-                  />
-                  <input
-                    placeholder="Davomiyligi"
-                    value={video.duration}
-                    onChange={(e) =>
-                      handleVideoChange(
-                        sIndex,
-                        vIndex,
-                        "duration",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <input
-                    placeholder="URL"
-                    value={video.videoUrl}
-                    onChange={(e) =>
-                      handleVideoChange(
-                        sIndex,
-                        vIndex,
-                        "videoUrl",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <label>
+            {form.curriculum.map((section, sIndex) => (
+              <div className="curriculum-section" key={sIndex}>
+                <h4>{sIndex + 1}-bo‘lim</h4>
+                <input
+                  placeholder="Bo‘lim nomi"
+                  value={section.title}
+                  onChange={(e) =>
+                    handleCurriculumChange(sIndex, "title", e.target.value)
+                  }
+                />
+                <input
+                  placeholder="Hafta"
+                  value={section.week}
+                  onChange={(e) =>
+                    handleCurriculumChange(sIndex, "week", e.target.value)
+                  }
+                />
+                {section.videos.map((video, vIndex) => (
+                  <div key={vIndex} className="video-item">
                     <input
-                      type="checkbox"
-                      checked={video.isFree}
+                      placeholder="Video nomi"
+                      value={video.title}
                       onChange={(e) =>
                         handleVideoChange(
                           sIndex,
                           vIndex,
-                          "isFree",
-                          e.target.checked
+                          "title",
+                          e.target.value
                         )
                       }
                     />
-                    Tekin
-                  </label>
-                </div>
-              ))}
-              <button type="button" onClick={() => addVideoToSection(sIndex)}>
-                ➕ Video
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={addCurriculumSection}>
-            ➕ Bo‘lim qo‘shish
-          </button>
-          <button type="submit" className="btn-submit">
-            📤 Saqlash
-          </button>
-        </form>
+                    <input
+                      placeholder="Davomiyligi"
+                      value={video.duration}
+                      onChange={(e) =>
+                        handleVideoChange(
+                          sIndex,
+                          vIndex,
+                          "duration",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <input
+                      placeholder="URL"
+                      value={video.videoUrl}
+                      onChange={(e) =>
+                        handleVideoChange(
+                          sIndex,
+                          vIndex,
+                          "videoUrl",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={video.isFree}
+                        onChange={(e) =>
+                          handleVideoChange(
+                            sIndex,
+                            vIndex,
+                            "isFree",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      Tekin
+                    </label>
+                  </div>
+                ))}
+                <button type="button" onClick={() => addVideoToSection(sIndex)}>
+                  ➕ Video
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addCurriculumSection}>
+              ➕ Bo‘lim qo‘shish
+            </button>
+            <button type="submit" className="btn-submit">
+              📤 Saqlash
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
