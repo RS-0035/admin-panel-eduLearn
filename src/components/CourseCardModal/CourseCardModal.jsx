@@ -36,7 +36,6 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
     const { name, value } = e.target;
 
     if (name === "price" || name === "duration" || name === "week") {
-      // Allow empty input
       if (value === "") {
         setForm({
           ...form,
@@ -46,19 +45,29 @@ const CourseCardModal = ({ showModal, onClose, existingData }) => {
         return;
       }
 
-      // Allow only numbers and one decimal point
-      // Regex explanation:
-      // ^\d*\.?\d*$  — any digits, optionally one dot, then any digits again
       if (/^\d*\.?\d*$/.test(value)) {
-        setForm({
+        const parsedValue = parseFloat(value);
+
+        let updatedForm = {
           ...form,
-          [name]: parseFloat(value),
-        });
+          [name]: parsedValue,
+        };
+
+        // Agar narx 0 bo‘lsa, barcha videolarda isFree: true bo‘lsin
+        if (name === "price" && parsedValue === 0) {
+          updatedForm.curriculum = form.curriculum.map((section) => ({
+            ...section,
+            videos: section.videos.map((video) => ({
+              ...video,
+              isFree: true,
+            })),
+          }));
+        }
+
+        setForm(updatedForm);
         setErrors({ ...errors, [name]: false });
       }
-      // if invalid input, ignore the change (don't update state)
     } else {
-      // For other fields, accept the input as is
       setForm({
         ...form,
         [name]: value,
